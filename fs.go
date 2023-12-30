@@ -4,14 +4,20 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
-const dbPath = "DB"
+var dbPathfn = func() string {
+	return "DB"
+}
 
-func CreateTabl(name string) error {
+func CreateTabl(tabl string) error {
 
-	tablName := filepath.Join("./", dbPath, name+".tabl")
+	tablName := filepath.Join("./", dbPathfn(), tabl+".tabl")
 	_, err := os.Stat(tablName)
 	if err == nil {
 		return fmt.Errorf("cannot create %s here", tablName)
@@ -31,15 +37,43 @@ func CreateTabl(name string) error {
 	}
 	defer file.Close()
 
-	// Write text to the file
-	now := time.Now()
-	init := fmt.Sprintf("init: %s\n", now.Format("2006-01-02T15:04:05Z"))
+	// add all fields needed for default metas
+	data := make(map[string]interface{})
+	data["init"] = time.Now()
+	data["id"] = "uuid"
 
-	_, err = file.WriteString(init)
+	newYamlData, err := yaml.Marshal(&data)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return fmt.Errorf("error marshaling meta file for %s", filename)
+
+	}
+	_, err = file.Write(newYamlData)
 	if err != nil {
 		return fmt.Errorf("error writing to meta file for %s", tablName)
 	}
 
-	// fmt.Println("File created successfully!")
+	return nil
+}
+
+func cleanFilename(filename string) string {
+	reg := regexp.MustCompile(`[^a-zA-Z0-9\.\-_]`)
+	return strings.ToLower(strings.Trim(reg.ReplaceAllString(filename, ""), "."))
+}
+
+// create a function that returns the full path of a col file
+func ColPath(tabl, col string) string {
+	return filepath.Join("./", dbPathfn(), tabl+".tabl", cleanFilename(col)+".col")
+}
+
+func CreateCol(tabl, name string) error {
+	colName := filepath.Join("./", dbPathfn(), tabl+".tabl")
+
+	filename := filepath.Join(colName, cleanFilename(name)+".col")
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("error creating col file for %s", filename)
+	}
+	defer file.Close()
 	return nil
 }
