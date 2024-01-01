@@ -2,6 +2,7 @@ package tabl
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -76,4 +77,24 @@ func CreateCol(tabl, name string) error {
 	}
 	defer file.Close()
 	return nil
+}
+
+func writeRow(tabl, col string, row *Row) (*Row, error) {
+	file := ColPath(tabl, col)
+	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed opening file: %s", err)
+		return row, err
+	}
+	defer f.Close()
+
+	// Write the string to the file
+	bytes, err := f.WriteString(row.String())
+	if err != nil {
+		log.Fatalf("Failed writing to file: %s", err)
+		return row, err
+	}
+	log.Printf("Wrote %d bytes to %s\n", bytes, file)
+
+	return row, nil
 }

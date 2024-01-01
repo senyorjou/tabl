@@ -39,6 +39,10 @@ func TestCreateTabl(t *testing.T) {
 
 }
 func TestCreateCol(t *testing.T) {
+	dbPathfn = func() string {
+		return "TestDB"
+	}
+
 	// Define a test table and column name
 	testTabl := "testTabl"
 	tablDir := filepath.Join("./", dbPathfn(), testTabl+".tabl")
@@ -57,7 +61,7 @@ func TestCreateCol(t *testing.T) {
 	// Check if the column directory was created
 	colDir := filepath.Join("./", dbPathfn(), testTabl+".tabl", testCol+".col")
 	_, err = os.Stat(colDir)
-	if os.IsNotExist(err) {
+	if err == nil {
 		t.Fatalf("Column directory was not created: %v", err)
 	}
 

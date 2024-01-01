@@ -17,8 +17,9 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	row, _ := tabl.InsertRow("foo", "title", "sit amet, consectetur adipiscing elit")
+	row, _ := tabl.InsertRow("foo", "title", "Some content")
 	fmt.Println("Created:", row.ID)
-	row, _ = tabl.UpdateRow("foo", "title", row.ID, "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam")
+	row, _ = tabl.UpdateRow("foo", "title", row.ID, "Some more content")
 	fmt.Println("Updated:", row.ID)
+
 }
