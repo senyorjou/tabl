@@ -8,9 +8,9 @@ import (
 )
 
 type Row struct {
-	ID     string // UUID
-	Millis int64  // Unix epoch time in milliseconds
-	Body   string // Body of the row
+	ID    string // UUID
+	Milli int64  // Unix epoch time in milliseconds
+	Body  string // Body of the row
 }
 
 func New(id, body string) *Row {
@@ -18,24 +18,24 @@ func New(id, body string) *Row {
 		id = uuid.New().String()
 	}
 	return &Row{
-		ID:     id,
-		Millis: time.Now().UnixMilli(),
-		Body:   body,
+		ID:    id,
+		Milli: time.Now().UnixMilli(),
+		Body:  body,
 	}
 }
 
 func (r *Row) String() string {
-	return fmt.Sprintf("%s,%d,%s\n", r.ID, r.Millis, r.Body)
+	return fmt.Sprintf("%s,%d,%s\n", r.ID, r.Milli, r.Body)
 }
 
 // display only id and date in a compact format
 func (r *Row) Compact() string {
-	return fmt.Sprintf("id:%s init:%d", r.ID, r.Millis)
+	return fmt.Sprintf("id:%s init:%d", r.ID, r.Milli)
 }
 
 // display only row date in human readable format
 func (r *Row) Date() string {
-	return time.Unix(r.Millis, 0).UTC().String()
+	return time.Unix(r.Milli, 0).UTC().String()
 }
 
 func InsertRow(tabl, col, body string) (*Row, error) {
